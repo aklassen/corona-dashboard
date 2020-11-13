@@ -1,5 +1,6 @@
 import logo from './corona.svg';
 import './App.css';
+import CoronaData from './CoronaData';
 
 function App() {
   return (
@@ -7,6 +8,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <h1>Corona Dashboard</h1>
+        <CoronaData></CoronaData>
       </header>
     </div>
   );

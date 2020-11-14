@@ -18,7 +18,6 @@ export default class CoronaChart extends React.Component {
 
   render() {
     const chartData = this.props.data.map((val) => {
-      console.log(val);
       return {
         date: this.parseDate(val.Meldedatum),
         incidence: parseFloat(val['7-Tagesinzidenz pro 100.000 Einwohner']),

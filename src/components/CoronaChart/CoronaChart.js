@@ -18,9 +18,12 @@ export default class CoronaChart extends React.Component {
 
   render() {
     const chartData = this.props.data.map((val) => {
+      console.log(val);
       return {
         date: this.parseDate(val.Meldedatum),
-        incidence: parseFloat(val['7-Tagesinzidenz pro 100.000 Einwohner'])
+        incidence: parseFloat(val['7-Tagesinzidenz pro 100.000 Einwohner']),
+        casesPastWeek: parseFloat(val['Fälle vergangene 7-Tage']),
+        confirmedCases: parseFloat(val['bestätigte Fälle']),
       };
     });
 
@@ -47,12 +50,16 @@ export default class CoronaChart extends React.Component {
 
     const yScale = scaleLinear()
       .domain(extent(chartData, (d) => d.incidence))
+      //.domain(extent(chartData, (d) => d.casesPastWeek))
+      //.domain(extent(chartData, (d) =>d.confirmedCases))
       .range([height, 0])
       .nice();
 
     const lineGenerator = line()
       .x((d) => xScale(d.date))
       .y((d) => yScale(d.incidence))
+      //.y((d) => yScale(d.casesPastWeek))
+      //.y((d) => yScale(d.confirmedCases))
       .curve(curveMonotoneX);
 
     return (

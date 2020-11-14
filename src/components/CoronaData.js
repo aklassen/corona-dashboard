@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import { readString } from 'react-papaparse';
+import CoronaChart from './CoronaChart/CoronaChart';
+import CoronaTable from './CoronaTable';
 
 export default class CoronaData extends React.Component {
   constructor(props) {
@@ -14,22 +16,20 @@ export default class CoronaData extends React.Component {
       this.setState({
         coronaData: parsedData.data.filter(
           (data) => data.Landkreis === 'Osnabrück, Stadt'
-        ),
+          //(data) => data.Landkreis === 'Osnabrück'
+          //(data) => data.Landkreis === 'Emsland'
+          // (data) => data.Landkreis === 'Hannover, Region'
+        ).slice(-10),
       });
     });
   }
 
   render() {
     return (
-      <table>
-        {this.state.coronaData.map((data, index) => (
-          <tr key={index}>
-            <td> {data.Meldedatum} </td>
-            <td> {data.Landkreis} </td>
-            <td> {data['7-Tagesinzidenz pro 100.000 Einwohner']}</td>
-          </tr>
-        ))}
-      </table>
+      <div>    
+        <CoronaChart data={this.state.coronaData}></CoronaChart>
+        <CoronaTable data={this.state.coronaData}></CoronaTable>
+      </div>
     );
   }
 }

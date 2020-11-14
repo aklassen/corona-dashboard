@@ -1,6 +1,6 @@
 import logo from './corona.svg';
 import './App.css';
-import CoronaData from './CoronaData';
+import CoronaData from './components/CoronaData';
 
 function App() {
   return (

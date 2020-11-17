@@ -1,3 +1,4 @@
+import React from "react";
 import logo from './corona.svg';
 import './App.css';
 import CoronaData from './components/CoronaData';

@@ -21,15 +21,23 @@ function CoronaTable() {
             <TableCell align="center">Meldedatum</TableCell>
             <TableCell align="center">Landkreis</TableCell>
             <TableCell align="center">7-Tagesinzidenz</TableCell>
+            <TableCell align="center">Fälle vergangene 7-Tage</TableCell>
+            <TableCell align="center">bestätigte Fälle</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((data) => (
+          {data.coronaData.map((data) => (
             <TableRow key={data.Meldedatum + data.Landkreis}>
               <TableCell align="center">{data.Meldedatum}</TableCell>
               <TableCell align="center">{data.Landkreis} </TableCell>
               <TableCell align="center">
                 {data["7-Tagesinzidenz pro 100.000 Einwohner"]}
+              </TableCell>
+              <TableCell align="center">
+                {data["Fälle vergangene 7-Tage"]}
+              </TableCell>
+              <TableCell align="center">
+                {data["bestätigte Fälle"]}
               </TableCell>
             </TableRow>
           ))}

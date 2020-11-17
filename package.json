@@ -52,5 +52,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://www.apps.nlga.niedersachsen.de/"
+  "proxy": "http://www.apps.nlga.niedersachsen.de/",
+  "devDependencies": {
+    "@types/d3": "^6.1.0"
+  }
 }

@@ -1,68 +1,77 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { readString } from "react-papaparse";
 import CoronaChart from "./CoronaChart/CoronaChart";
 import CoronaTable from "./CoronaTable";
-import FormControl from "@material-ui/core/FormControl";
-import NativeSelect from "@material-ui/core/NativeSelect";
-import InputLabel from "@material-ui/core/InputLabel";
+import CoronaFilter from "./CoronaFilter";
 
-
-interface CoronaDataState {
-  coronaData: any[];
-  county: string;
+export enum CoronaDataType {
+  INCIDENCE,
+  CASES_PAST_WEEK,
+  CONFIRMED_CASES
 }
 
-export const CoronaContext = React.createContext<any[]>([]);
+export interface CoronaContextInterface {
+  coronaData: any[];
+  coronaDataType: CoronaDataType;
+  county: string;
+  counties: string[];
+  setCounty(county: string): void;
+  setCoronaDataType(type: CoronaDataType): void;
+}
 
-export default class CoronaData extends React.Component<{}, CoronaDataState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = { coronaData: [], county: "Osnabrück, Stadt" };
-  }
+export const CoronaContext = React.createContext<CoronaContextInterface>({
+  coronaData: [],
+  coronaDataType: CoronaDataType.INCIDENCE,
+  county: "Osnabrück, Stadt",
+  counties: ["Osnabrück, Stadt"],
+  setCounty: () => {},
+  setCoronaDataType: () => {},
+});
 
-  componentDidMount() {
+function CoronaData(props: {}) {
+  const [counties, setCounties] = useState([]);
+  const [coronaData, setCoronaData] = useState([]);
+
+  const [county, setCounty] = useState("Osnabrück, Stadt");
+  const [coronaDataType, setCoronaDataType] = useState(CoronaDataType.INCIDENCE);
+
+  useEffect(() => {
     axios.get(`/corona/download.php?csv_tag_region`).then((res) => {
       const parsedData: any = readString(res.data, { header: true });
+      setCoronaData(parsedData.data);
 
-      this.setState({
-        coronaData: parsedData.data
-          .filter(
-            (data: any) => data.Landkreis === "Osnabrück, Stadt"
-            //(data) => data.Landkreis === 'Osnabrück'
-            //(data) => data.Landkreis === 'Emsland'
-            // (data) => data.Landkreis === 'Hannover, Region'
-          )
-          .slice(-10),
-      });
+      const uniqueCounties: any = [
+        ...new Set<string>(
+          parsedData.data.map((item: { Landkreis: string }) => item.Landkreis)
+        ),
+      ]
+        .filter((cty: string) => cty !== undefined)
+        .sort();
+      setCounties(uniqueCounties);
     });
-  }
-  handleChange(event: React.ChangeEvent<{ value: unknown }>) {
-    console.log(event.target.value);
-    //this.setState({county: event.target.value as string});
-  }
+  }, []);
 
-  render() {
-    return (
-      <CoronaContext.Provider value={this.state.coronaData}>
-        <FormControl>
-          
-          <InputLabel htmlFor="county-select" >Landkreis</InputLabel>
-          <NativeSelect
-            id="county-select"
-            value={this.state.county}
-            onChange={this.handleChange.bind(this)}
-          >
-            <option value="Osnabrück, Stadt">Osnabrück, Stadt</option>
-            <option value="Osnabrück">Osnabrück</option>
-            <option value="Emsland">Emsland</option>
-            <option value="Hannover, Region">Hannover, Region</option>
-            
-          </NativeSelect>
-        </FormControl>
-        <CoronaChart data={this.state.coronaData}></CoronaChart>
-        <CoronaTable></CoronaTable>
-      </CoronaContext.Provider>
-    );
-  }
+  const filteredCoronaData = coronaData
+    .filter((data: any) => data.Landkreis === county)
+    .slice(-10);
+
+  return (
+    <CoronaContext.Provider
+      value={{
+        coronaData: filteredCoronaData,
+        coronaDataType: coronaDataType,
+        county: county,
+        counties: counties,
+        setCounty: setCounty,
+        setCoronaDataType: setCoronaDataType
+      }}
+    >
+      <CoronaFilter></CoronaFilter>
+      <CoronaChart></CoronaChart>
+      <CoronaTable></CoronaTable>
+    </CoronaContext.Provider>
+  );
 }
+
+export default CoronaData;

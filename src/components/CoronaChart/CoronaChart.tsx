@@ -1,17 +1,15 @@
-import React, { useContext } from "react";
-
 import {
-  scaleLinear,
-  scaleBand,
-  line,
   curveMonotoneX,
   extent,
+  line,
+  scaleBand,
+  scaleLinear,
   transition,
 } from "d3";
-
-import Line from "./line/Line";
-import XYAxis from "./axis/XY-Axis";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { CoronaContext, CoronaDataType } from "../CoronaData";
+import XYAxis from "./axis/XY-Axis";
+import Line from "./line/Line";
 
 function parseDate(input: string) {
   var parts = input.match(/(\d+)/g);
@@ -28,6 +26,14 @@ function parseDate(input: string) {
 
 function CoronaChart() {
   const data = useContext(CoronaContext);
+  const ref = useRef<HTMLHeadingElement>(null);
+  const [parentWidth, setParentWidth] = useState(960);
+  useEffect(() => {
+    console.log("width", ref.current ? ref.current.offsetWidth : 0);
+    if (ref.current) {
+      setParentWidth(ref.current?.offsetWidth);
+    }
+  }, [ref.current]);
 
   const chartData = data.coronaData.map((val) => {
     return {
@@ -37,8 +43,6 @@ function CoronaChart() {
       confirmedCases: Number(val["bestätigte Fälle"]),
     };
   });
-
-  const parentWidth = 960;
 
   const margins = {
     top: 20,
@@ -70,7 +74,6 @@ function CoronaChart() {
     .range([height, 0])
     .nice();
 
-
   const incidenceLineGenerator = line<{
     date: Date;
     incidence: number;
@@ -99,57 +102,56 @@ function CoronaChart() {
   const ticks = 15;
   const t = transition().duration(1000);
 
-
   return (
-    <div>
-     
+    <div ref={ref}>
       <svg
         className="lineChartSvg"
         width={width + margins.left + margins.right}
         height={height + margins.top + margins.bottom}
       >
-        { data.coronaDataType == CoronaDataType.INCIDENCE &&
-        <g transform={`translate(${margins.left}, ${margins.top})`}>
-          <XYAxis {...{ xScale, yScale: incidenceScale, height, ticks, t }} />
-          <Line
-            data={chartData}
-            xScale={xScale}
-            yScale={incidenceScale}
-            lineGenerator={incidenceLineGenerator}
-            width={width}
-            height={height}
-          />
-        
-        </g>
-        }
-        { data.coronaDataType == CoronaDataType.CASES_PAST_WEEK &&
-        <g transform={`translate(${margins.left}, ${margins.top})`}>
-          <XYAxis {...{ xScale, yScale: casesPastWeekScale, height, ticks, t }} />
-          <Line
-            data={chartData}
-            xScale={xScale}
-            yScale={casesPastWeekScale}
-            lineGenerator={casesPastWeekGenerator}
-            width={width}
-            height={height}
-          />
-        
-        </g>
-        }
-        { data.coronaDataType == CoronaDataType.CONFIRMED_CASES &&
-        <g transform={`translate(${margins.left}, ${margins.top})`}>
-          <XYAxis {...{ xScale, yScale: confirmedCasesScale, height, ticks, t }} />
-          <Line
-            data={chartData}
-            xScale={xScale}
-            yScale={confirmedCasesScale}
-            lineGenerator={confirmedCasesGenerator}
-            width={width}
-            height={height}
-          />
-        
-        </g>
-        }
+        {data.coronaDataType == CoronaDataType.INCIDENCE && (
+          <g transform={`translate(${margins.left}, ${margins.top})`}>
+            <XYAxis {...{ xScale, yScale: incidenceScale, height, ticks, t }} />
+            <Line
+              data={chartData}
+              xScale={xScale}
+              yScale={incidenceScale}
+              lineGenerator={incidenceLineGenerator}
+              width={width}
+              height={height}
+            />
+          </g>
+        )}
+        {data.coronaDataType == CoronaDataType.CASES_PAST_WEEK && (
+          <g transform={`translate(${margins.left}, ${margins.top})`}>
+            <XYAxis
+              {...{ xScale, yScale: casesPastWeekScale, height, ticks, t }}
+            />
+            <Line
+              data={chartData}
+              xScale={xScale}
+              yScale={casesPastWeekScale}
+              lineGenerator={casesPastWeekGenerator}
+              width={width}
+              height={height}
+            />
+          </g>
+        )}
+        {data.coronaDataType == CoronaDataType.CONFIRMED_CASES && (
+          <g transform={`translate(${margins.left}, ${margins.top})`}>
+            <XYAxis
+              {...{ xScale, yScale: confirmedCasesScale, height, ticks, t }}
+            />
+            <Line
+              data={chartData}
+              xScale={xScale}
+              yScale={confirmedCasesScale}
+              lineGenerator={confirmedCasesGenerator}
+              width={width}
+              height={height}
+            />
+          </g>
+        )}
       </svg>
     </div>
   );

@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { Grid, Paper } from "@material-ui/core";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { readString } from "react-papaparse";
 import CoronaChart from "./CoronaChart/CoronaChart";
-import CoronaTable from "./CoronaTable";
 import CoronaFilter from "./CoronaFilter";
+import CoronaTable from "./CoronaTable";
 
 export enum CoronaDataType {
   INCIDENCE,
   CASES_PAST_WEEK,
-  CONFIRMED_CASES
+  CONFIRMED_CASES,
 }
 
 export interface CoronaContextInterface {
@@ -34,7 +35,9 @@ function CoronaData(props: {}) {
   const [coronaData, setCoronaData] = useState([]);
 
   const [county, setCounty] = useState("Osnabrück, Stadt");
-  const [coronaDataType, setCoronaDataType] = useState(CoronaDataType.INCIDENCE);
+  const [coronaDataType, setCoronaDataType] = useState(
+    CoronaDataType.INCIDENCE
+  );
 
   useEffect(() => {
     axios.get(`/corona/download.php?csv_tag_region`).then((res) => {
@@ -64,12 +67,26 @@ function CoronaData(props: {}) {
         county: county,
         counties: counties,
         setCounty: setCounty,
-        setCoronaDataType: setCoronaDataType
+        setCoronaDataType: setCoronaDataType,
       }}
     >
-      <CoronaFilter></CoronaFilter>
-      <CoronaChart></CoronaChart>
-      <CoronaTable></CoronaTable>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} md={9} lg={9}>
+          <Paper>
+            <CoronaChart></CoronaChart>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={12} md={3} lg={3}>
+          <Paper>
+            <CoronaFilter></CoronaFilter>
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper>
+            <CoronaTable></CoronaTable>
+          </Paper>
+        </Grid>
+      </Grid>
     </CoronaContext.Provider>
   );
 }

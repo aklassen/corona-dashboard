@@ -26,7 +26,7 @@ function CoronaTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.coronaData.map((data) => (
+          { [...data.coronaData].reverse().map((data) => (
             <TableRow key={data.Meldedatum + data.Landkreis}>
               <TableCell align="center">{data.Meldedatum}</TableCell>
               <TableCell align="center">{data.Landkreis} </TableCell>

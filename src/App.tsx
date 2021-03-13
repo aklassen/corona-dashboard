@@ -3,13 +3,13 @@ import {
   Grid,
   GridSpacing,
   makeStyles,
-  Paper,
   Theme,
-} from "@material-ui/core";
-import React from "react";
-import "./App.css";
-import CoronaData from "./components/CoronaData";
-import logo from "./corona.svg";
+  Typography,
+} from '@material-ui/core';
+import React from 'react';
+import './App.css';
+import CoronaData from './components/CoronaData';
+import logo from './corona.svg';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,12 +34,24 @@ function App() {
 
   return (
     <>
-      <div className="App-Header">
+      <div>
         <Grid container className={classes.root} spacing={2}>
           <Grid item xs={12}>
-            <Paper className={classes.paper}>
-              <img src={logo} className="App-logo" alt="logo" />
-            </Paper>
+            <Grid container spacing={2} justify="center" alignItems="center">
+              <Grid item xs={12} sm={2} md={2} lg={2}>
+                <img
+                  src={logo}
+                  className="App-logo"
+                  alt="logo"
+                  width={'125px'}
+                />
+              </Grid>
+              <Grid item xs={12} sm={10} md={10} lg={10}>
+                <Typography variant="h2" component="h1">
+                  Corona Dashboard
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item xs={12}>
             <CoronaData></CoronaData>
